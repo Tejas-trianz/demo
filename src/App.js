@@ -3,7 +3,7 @@ import './App.css'
 import Keypad from "./Keypad";
 
 const App = () => {
-    const [result, setResult]= useState(0);
+    const [result, setResult]= useState("0");
     const [subResult, setSubResult]= useState('');
 
   
@@ -19,21 +19,12 @@ const App = () => {
                     <input id="sub-text" type="text" value={subResult} disabled/>
                     <input id="main-text" type="text" value={result} disabled/>
                 </form> 
-                <div className="keypad">
-                    <div className="special-keys">
-                        <button>MC</button>
-                        <button>MR</button>
-                        <button>M+</button>
-                        <button>M-</button>
-                        <button>MS</button>
-                        <button>M&#9660;</button>
-                    </div>
-                    <Keypad
-                    result={result}
-                    setResult={setResult}
-                    subResult={subResult}
-                    setSubResult={setSubResult}/>
-                </div>
+                
+                <Keypad
+                result={result}
+                setResult={setResult}
+                subResult={subResult}
+                setSubResult={setSubResult}/>
             </div>
         </>
     );
