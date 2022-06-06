@@ -15,20 +15,20 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
         }
 
         let nameVal = e.target.name;
-        let intValue = parseInt(result);
-        // console.log(intValue);
+        let resValue = parseInt(result);
+        // console.log(resValue);
 
         switch(nameVal){
-            case "sqrt": setSubResult("sqrt("+ intValue +")");
-                            setResult(Math.sqrt(intValue));
+            case "sqrt": setSubResult("sqrt("+ resValue +")");
+                            setResult(Math.sqrt(resValue));
                             break;
 
-            case "inverse": setSubResult(`1/(${intValue})`);
-                            setResult(1/(intValue));
+            case "inverse": setSubResult(`1/(${resValue})`);
+                            setResult(1/(resValue));
                             break;
 
-            case "power": setSubResult(`pow(${intValue})`);
-                            setResult(Math.pow(intValue, 2));
+            case "power": setSubResult(`pow(${resValue})`);
+                            setResult(Math.pow(resValue, 2));
                             break;
 
             case "clear":setResult("0");
@@ -38,7 +38,11 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
             case "c": setResult("0");
                             break;
 
-            case "negate": setResult("");
+            case "negate": if(result.charAt(0) === "-"){
+                                setResult(result.substring(1));
+                            } else {
+                                setResult("-" + result);
+                            }
                             break;
 
             default: setResult("error");
