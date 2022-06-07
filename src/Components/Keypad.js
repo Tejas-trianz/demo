@@ -2,84 +2,91 @@ import React from "react";
 
 const Keypad = ({result,setResult,subResult,setSubResult}) => {
 
-   const clickHandler = (e) =>{
-
-       if(e.target.value){
-            if(result==="0"|| result === "error"){
-                setResult( e.target.value);
+   const clickHandler = (e) => 
+   {
+        if (e.target.value) {
+            if (e.target.value === ".") {
+                setResult(result + e.target.value);
+            } 
+            else if (result === "0" || result === "error") {
+                setResult(e.target.value);
+            } 
+            else {
+                setResult(result + e.target.value);
             }
-            else{
-            setResult(result+ e.target.value);
-            }
-           return;
+            return;
         }
 
         let nameVal = e.target.name;
-        let resValue = parseInt(result);
+        let resValue = parseFloat(result);
         // console.log(resValue);
 
-        switch(nameVal){
-            case "sqrt": setSubResult("sqrt("+ resValue +")");
-                            setResult(Math.sqrt(resValue));
-                            break;
+        switch (nameVal) 
+        {
+            case "sqrt":
+                setSubResult("sqrt(" + resValue + ")");
+                setResult((Math.sqrt(resValue)).toString());
+                break;
 
-            case "inverse": setSubResult(`1/(${resValue})`);
-                            setResult(1/(resValue));
-                            break;
+            case "inverse":
+                if (result === "0" || result === "") {
+                setResult("Cannot devide by zero");
+                } 
+                else {
+                setSubResult(`1/(${resValue})`);
+                setResult((1 / resValue).toString());
+                }
+                break;
 
-            case "power": setSubResult(`pow(${resValue})`);
-                            setResult(Math.pow(resValue, 2));
-                            break;
+            case "power":
+                setSubResult(`pow(${resValue})`);
+                setResult((Math.pow(resValue, 2)).toString());
+                break;
 
-            case "clear":setResult("0");
-                            setSubResult("");
-                            break;
+            case "c":
+                setResult("0");
+                setSubResult("");
+                break;
 
-            case "c": setResult("0");
-                            break;
+            case "clear":
+                setResult("0");
+                break;
 
-            case "negate": if(result.charAt(0) === "-"){
-                                setResult(result.substring(1));
-                            } else {
-                                setResult("-" + result);
-                            }
-                            break;
+            case "negate":
+                if (result.charAt(0) === "-") {
+                setResult(result.substring(1));
+                } 
+                else {
+                setResult("-" + result);
+                }
+                break;
 
-            default: setResult("error");
-                    setSubResult("");
+            default:{
+                setResult("error")
+                setSubResult("");
+            }
         }
     };
        
-
-//    const clearHandler = (e) =>{
-//        let btnNameVal = e.target.name;
-//         if(btnNameVal === "c"){
-            
-//             return;
-//         }
-       
-//     };
-    
-   const deleteHandler = () =>{
-    setResult(result.slice(0,-1));
-    if(result ===''|| result.length === 1){
-        setResult("0");
-    }
+   const deleteHandler = () => {
+     setResult(result.slice(0, -1));
+     if (result === "" || result.length === 1 || result === "error") {
+       setResult("0");
+     }
    };
 
-    const calculate =() =>{
-        let resValue;
-        try{
-            resValue = eval(result).toString();
-        }
-        catch{
-            setResult("error");
-        }
-        if(resValue && result !=="0"){
-            setSubResult(result);
-            setResult(resValue);
-        }
-        
+    const calculate = () => {
+      let resValue;
+      try {
+        resValue = eval(result).toString();
+      } 
+      catch {
+        setResult("error");
+      }
+      if (resValue && result !== "0") {
+        setSubResult(result);
+        setResult(resValue);
+      }
     };
 
     return (
@@ -99,8 +106,8 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
                 <button name="delete" onClick={deleteHandler}><i className="fa-solid fa-delete-left"></i></button>
                 
                 <button name="inverse" onClick={clickHandler}><sup>1</sup>/<sub></sub>x</button>
+                <button name="power" onClick={clickHandler}>x<sup>2</sup></button>
                 <button name="sqrt" onClick={clickHandler} ><span>&#8730;</span></button>
-                <button name="power" onClick={clickHandler}>x<sup>2</sup></button>  
                 <button value="/" onClick={clickHandler}>&divide;</button>
                 
                 <button value="7" onClick={clickHandler}>7</button>
