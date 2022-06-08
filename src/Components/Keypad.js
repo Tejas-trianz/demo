@@ -1,43 +1,93 @@
-import React from "react";
+import React,{useState} from "react";
 
 const Keypad = ({result,setResult,subResult,setSubResult}) => {
+    const [operator, setOperator]= useState("");
+    const [a, setA] = useState("");
+    const [memory, setMemory] = useState([]);
 
    const clickHandler = (e) => 
    {
+       let temp;
         if (e.target.value) {
-            if (e.target.value === ".") {
-                setResult(result + e.target.value);
-            } 
-            else if (result === "0" || result === "error") {
-                setResult(e.target.value);
+             if (result === "0" || result === "error") {
+                temp = e.target.value
             } 
             else {
-                setResult(result + e.target.value);
+                temp = result + e.target.value;
             }
+            if(operator) setA(temp)
+            setResult(temp);
             return;
         }
 
         let nameVal = e.target.name;
         let resValue = parseFloat(result);
         // console.log(resValue);
-
+        
         switch (nameVal) 
-        {
+        {   
+            case "+": 
+                {//plus
+                    let tempVal = result;
+                    if (a) {
+                        tempVal = handleResult()
+                    }
+                    setSubResult(tempVal + "+");
+                    setOperator("+");
+                    setResult('0')
+                    break;
+                }
+            case "-":
+                {// minus
+                    let tempVal = result;
+                    if (a) {
+                        tempVal = handleResult()
+                    }
+                    setSubResult(tempVal + "-");
+                    setOperator("-");
+                    setResult('0')
+                    break;
+                }
+            case "*": 
+                {// multiply
+                let tempVal = result;
+                    if (a) {
+                        tempVal = handleResult()
+                    }
+                    setSubResult(tempVal + "*");
+                    setOperator("*");
+                    setResult('0')
+                    break;
+                }
+            case "/": 
+                {// devide
+                    let tempVal = result;
+                    if (a) {
+                        tempVal = handleResult()
+                    }
+                    setSubResult(tempVal + "/");
+                    setOperator("/");
+                    setResult('0')
+                    break;
+                }
+                    
             case "sqrt":
                 setSubResult("sqrt(" + resValue + ")");
                 setResult((Math.sqrt(resValue)).toString());
                 break;
 
             case "inverse":
-                if (result === "0" || result === "") {
-                setResult("Cannot devide by zero");
-                } 
-                else {
-                setSubResult(`1/(${resValue})`);
-                setResult((1 / resValue).toString());
+                {
+                    if (result === "0" || result === "") {
+                    setResult("Cannot devide by zero");
+                    setSubResult('')
+                    } 
+                    else {
+                    setSubResult(`1/(${resValue})`);
+                    setResult((1 / resValue).toString());
+                    }
+                    break;
                 }
-                break;
-
             case "power":
                 setSubResult(`pow(${resValue})`);
                 setResult((Math.pow(resValue, 2)).toString());
@@ -46,6 +96,7 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
             case "c":
                 setResult("0");
                 setSubResult("");
+                // setOperator('')
                 break;
 
             case "clear":
@@ -55,12 +106,27 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
             case "negate":
                 if (result.charAt(0) === "-") {
                 setResult(result.substring(1));
+                setA(a.substring(1));
                 } 
                 else {
                 setResult("-" + result);
+                setA("-"+ a)
                 }
                 break;
-
+            case "eval":
+                {
+                    let temp = subResult;
+                    if (temp[temp.length - 1] === '='){
+                        temp = temp.slice(0, temp.length - 1)
+                    }
+                    let tempA = a;
+                    if (!tempA) tempA = result;
+                    // console.log(temp,A ) 
+                    setResult((eval(temp+tempA )).toString());
+                    setSubResult(temp +tempA + '=');
+                    setA('')
+                    break;
+                }
             default:{
                 setResult("error")
                 setSubResult("");
@@ -70,34 +136,99 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
        
    const deleteHandler = () => {
      setResult(result.slice(0, -1));
+     setA(a.slice(0, -1));
      if (result === "" || result.length === 1 || result === "error") {
        setResult("0");
      }
    };
 
-    const calculate = () => {
-      let resValue;
-      try {
-        resValue = eval(result).toString();
-      } 
-      catch {
-        setResult("error");
-      }
-      if (resValue && result !== "0") {
-        setSubResult(result);
-        setResult(resValue);
-      }
-    };
+    const handleResult = () => {
+        let res;
+        try{
+            res = (eval(subResult + result)).toString();
+            setResult(res);
+        } catch {
+            setResult("error");
+        }
+        
+        setA("");
+        return res;
+    }
+    // const calculate = () => {
+    //   let resValue;
+    //   let expValue =subResult+ result;
+    //   try {
+    //     resValue = eval(expValue).toString();
+    //   } 
+    //   catch {
+    //     setResult("error");
+    //   }
+    //   if (resValue && result !== "0") {
+    //     setSubResult(expValue);
+    //     setResult(resValue);
+    //   }
+    // };
+    const Mkeyhandler = (e) => {
+        let MkeyValue = e.target.value;
+        
+        switch(MkeyValue){
+            case "MC":
+                console.log("mc")
+                if(memory.length>0) setMemory([]);
+                break;
 
+            case "MR":
+                console.log("mr")
+                if(memory.length>0){
+                    setResult((memory[memory.length-1]).toString());
+                }
+                break;
+
+            case "M+":
+                console.log("m+")
+                if(memory.length>0){
+                    let items= [...memory];
+                    let res = parseFloat(items.pop());
+                    res += parseFloat(result);
+                    items.push(res)
+                    // console.log(items)
+                    setMemory([...items]);
+                }
+                break;
+
+            case "M-":
+                console.log("m-")
+                if(memory.length>0){
+                    let items= [...memory];
+                    let res = parseFloat(items.pop());
+                    res -= parseFloat(result);
+                    items.push(res)
+                    // console.log(items)
+                    setMemory([...items]);
+                }
+                break;
+
+            case "MS":
+                console.log("ms")
+                setMemory(memory => [...memory,result]);
+                break;
+
+            case "M":
+                break;
+
+            default:break;
+        }
+    };
+    
     return (
         <div className="keypad">
             <div className="special-keys">
-                <button>MC</button>
-                <button>MR</button>
-                <button>M+</button>
-                <button>M-</button>
-                <button>MS</button>
-                <button>M<sup>&#9660;</sup></button>
+                <button value="MC" onClick={Mkeyhandler}>MC</button>
+                <button value="MR" onClick={Mkeyhandler}>MR</button>
+                <button value="M+" onClick={Mkeyhandler}>M+</button>
+                <button value="M-" onClick={Mkeyhandler}>M-</button>
+                <button value="MS" onClick={Mkeyhandler}>MS</button>
+                <button >M<sup>&#9660;</sup></button> {/*  value="M" onClick={Mkeyhandler} */}
             </div>
             <div className="keys">
                 <button value="%" onClick={clickHandler}>%</button>
@@ -108,28 +239,28 @@ const Keypad = ({result,setResult,subResult,setSubResult}) => {
                 <button name="inverse" onClick={clickHandler}><sup>1</sup>/<sub></sub>x</button>
                 <button name="power" onClick={clickHandler}>x<sup>2</sup></button>
                 <button name="sqrt" onClick={clickHandler} ><span>&#8730;</span></button>
-                <button value="/" onClick={clickHandler}>&divide;</button>
+                <button name="/" onClick={clickHandler}>&divide;</button>
                 
                 <button value="7" onClick={clickHandler}>7</button>
                 <button value="8" onClick={clickHandler}>8</button>
                 <button value="9" onClick={clickHandler}>9</button>
-                <button value="*" onClick={clickHandler}>x</button>
+                <button name="*" onClick={clickHandler}>x</button>
                 
                 <button value="4" onClick={clickHandler}>4</button>
                 <button value="5" onClick={clickHandler}>5</button>
                 <button value="6" onClick={clickHandler}>6</button>
-                <button value={"-"} onClick={clickHandler}>&ndash;</button>
+                <button name="-" onClick={clickHandler}>&ndash;</button>
                 
                 <button value="1" onClick={clickHandler}>1</button>
                 <button value="2" onClick={clickHandler}>2</button>
                 <button value="3" onClick={clickHandler}>3</button>
-                <button value="+" onClick={clickHandler}>+</button>
+                <button name="+" onClick={clickHandler}>+</button>
                 
                 <button name="negate" onClick={clickHandler}>+/-</button>
                 <button value="0" onClick={clickHandler}>0</button>
                 <button value="." onClick={clickHandler}><b>.</b></button>
 
-                <button name="eval" onClick={calculate} id="result">=</button>
+                <button name="eval" onClick={clickHandler} id="result">=</button>
             </div>
         </div>
     );
